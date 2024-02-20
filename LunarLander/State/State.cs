@@ -4,12 +4,14 @@ using Microsoft.Xna.Framework.Content;
 
 public abstract class State : IState
 {
-  protected GraphicsDeviceManager m_graphics;
   protected SpriteBatch m_spriteBatch;
   protected GraphicsDevice m_graphicsDevice;
+  protected int m_screenWidth;
+  protected int m_screenHeight;
 
   public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics) {
-    m_graphics = graphics;
+    m_screenWidth = graphics.PreferredBackBufferWidth;
+    m_screenHeight = graphics.PreferredBackBufferHeight;
     m_spriteBatch = new SpriteBatch(graphicsDevice);
     m_graphicsDevice = graphicsDevice;
   }

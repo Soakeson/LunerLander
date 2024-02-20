@@ -1,7 +1,7 @@
 public enum MainMenuEnum
 {
   Start,
-  Options,
+  HighScores,
   Credits,
-  About,
+  Exit,
 }
