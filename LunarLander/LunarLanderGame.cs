@@ -47,7 +47,7 @@ public class LunarLanderGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.PaleGoldenrod);
+        GraphicsDevice.Clear(Color.Black);
         m_currState.render(gameTime);
 
         // TODO: Add your drawing code here
