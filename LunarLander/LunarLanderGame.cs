@@ -18,6 +18,10 @@ public class LunarLanderGame : Game
 
     protected override void Initialize()
     {
+        m_graphics.PreferredBackBufferWidth = 1920/2;
+        m_graphics.PreferredBackBufferHeight = 1080/2;
+        m_graphics.ApplyChanges();
+        
         m_stateList = new Dictionary<StateEnum, State>();
         m_stateList.Add(StateEnum.MainMenu, new MainMenu());
         m_stateList.Add(StateEnum.Game, new Credits());
@@ -25,7 +29,6 @@ public class LunarLanderGame : Game
         m_stateList.Add(StateEnum.Scores, new Credits());
         m_stateList.Add(StateEnum.Credits, new Credits());
         m_currState = m_stateList[StateEnum.MainMenu];
-
 
         // Initialize all states in the list
         foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
@@ -38,6 +41,7 @@ public class LunarLanderGame : Game
 
     protected override void LoadContent()
     {
+        // Load content for all states
         foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
         {
           if (e is not StateEnum.Exit)

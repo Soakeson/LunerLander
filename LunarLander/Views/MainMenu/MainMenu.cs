@@ -59,7 +59,7 @@ class MainMenu : State
       // If item has been selected render differently
       if (m_currSelect.Value.Key == e)
       {
-        m_spriteBatch.DrawString(m_menuFont, "{" + e.ToString() + "}", new Vector2(30, m_screenHeight*3/5 + offset), Color.LawnGreen);
+        m_spriteBatch.DrawString(m_menuFont, "{" + e.ToString() + "}", new Vector2(30, m_screenHeight*3/5 + offset), Color.Firebrick);
       }
       else
       {

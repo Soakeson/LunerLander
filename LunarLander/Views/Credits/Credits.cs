@@ -36,7 +36,11 @@ class Credits : State
   override public void render(GameTime gameTime)
   {
     m_spriteBatch.Begin(SpriteSortMode.Deferred);
-    m_spriteBatch.DrawString(m_creditFont, $"Creator: Skyler Oakeson \n", new Vector2(m_screenWidth/2, m_screenHeight/2), Color.White);
+    Vector2 stringSize = m_creditFont.MeasureString("Creator: Skyler Oakeson");
+    int yPos = ((int)(gameTime.TotalGameTime.TotalMilliseconds - m_momentOfCreation.Value.TotalMilliseconds));
+    m_spriteBatch.DrawString(m_creditFont, "Creator: Skyler Oakeson", 
+        new Vector2(m_screenWidth-stringSize.X, yPos < m_screenHeight-stringSize.Y ? yPos : m_screenHeight-stringSize.Y)/2, 
+        Color.White);
     m_spriteBatch.End();
   }
 
