@@ -4,6 +4,7 @@ using System;
 public enum MainMenuEnum
 {
   Start,
+  Options,
   HighScores,
   Credits,
   Exit,

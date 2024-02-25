@@ -20,17 +20,29 @@ public class LunarLanderGame : Game
     {
         m_stateList = new Dictionary<StateEnum, State>();
         m_stateList.Add(StateEnum.MainMenu, new MainMenu());
+        m_stateList.Add(StateEnum.Game, new Credits());
+        m_stateList.Add(StateEnum.Options, new Credits());
+        m_stateList.Add(StateEnum.Scores, new Credits());
+        m_stateList.Add(StateEnum.Credits, new Credits());
         m_currState = m_stateList[StateEnum.MainMenu];
-        m_currState.initialize(GraphicsDevice, m_graphics);
-        
-        // TODO: Initialize all states!
-        // TODO: Add your initialization logic here
+
+
+        // Initialize all states in the list
+        foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
+        {
+          if (e is not StateEnum.Exit)
+            m_stateList[e].initialize(GraphicsDevice, m_graphics);
+        }
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
-        m_currState.loadContent(this.Content);
+        foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
+        {
+          if (e is not StateEnum.Exit)
+            m_stateList[e].loadContent(this.Content);
+        }
     }
 
     protected override void Update(GameTime gameTime)
@@ -40,8 +52,11 @@ public class LunarLanderGame : Game
         {
           Exit();
         }
-
-        m_currState.update(gameTime);
+        else
+        {
+          m_currState = m_stateList[m_nextState];
+          m_currState.update(gameTime);
+        }
         base.Update(gameTime);
     }
 
