@@ -23,11 +23,11 @@ public class LunarLanderGame : Game
         m_graphics.ApplyChanges();
         
         m_stateList = new Dictionary<StateEnum, State>();
-        m_stateList.Add(StateEnum.MainMenu, new MainMenu());
-        m_stateList.Add(StateEnum.Game, new Credits());
-        m_stateList.Add(StateEnum.Options, new Credits());
-        m_stateList.Add(StateEnum.Scores, new Credits());
-        m_stateList.Add(StateEnum.Credits, new Credits());
+        m_stateList.Add(StateEnum.MainMenu, new MainMenuView());
+        m_stateList.Add(StateEnum.Game, new GameView());
+        m_stateList.Add(StateEnum.Options, new OptionsView());
+        m_stateList.Add(StateEnum.Scores, new ScoresView());
+        m_stateList.Add(StateEnum.Credits, new CreditsView());
         m_currState = m_stateList[StateEnum.MainMenu];
 
         // Initialize all states in the list

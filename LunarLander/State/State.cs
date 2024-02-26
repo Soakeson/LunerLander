@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using CS5410.Input;
 
 public abstract class State : IState
 {
@@ -8,6 +9,7 @@ public abstract class State : IState
   protected GraphicsDevice m_graphicsDevice;
   protected int m_screenWidth;
   protected int m_screenHeight;
+  protected KeyboardInput m_keyboard = new KeyboardInput();
 
   public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics) {
     m_screenWidth = graphics.PreferredBackBufferWidth;

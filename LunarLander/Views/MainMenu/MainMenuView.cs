@@ -5,14 +5,14 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using CS5410.Input;
 
-class MainMenu : State
+class MainMenuView : State
 {
   private SpriteFont m_menuFont;
+  private float m_fontScaling = .3f;
   private LinkedListNode<KeyValuePair<MainMenuEnum, StateEnum>> m_currSelect;
   private LinkedList<KeyValuePair<MainMenuEnum, StateEnum>> m_mainMenu;
-  private KeyboardInput m_keyboard;
  
-  public MainMenu()
+  public MainMenuView()
   {
     // Register all key:(menu items) value:(state changes) into the linked list
     m_mainMenu = new LinkedList<KeyValuePair<MainMenuEnum, StateEnum>>();
@@ -25,7 +25,6 @@ class MainMenu : State
     // Initilaize first value in the linked list as the start
     m_currSelect = m_mainMenu.First;
 
-    m_keyboard = new KeyboardInput();
     m_keyboard.registerCommand(Keys.W, true, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => {
           m_currSelect = m_currSelect.Previous is not null ? m_currSelect.Previous :  m_mainMenu.Last;
           }));
@@ -59,13 +58,33 @@ class MainMenu : State
       // If item has been selected render differently
       if (m_currSelect.Value.Key == e)
       {
-        m_spriteBatch.DrawString(m_menuFont, "{" + e.ToString() + "}", new Vector2(30, m_screenHeight*3/5 + offset), Color.Firebrick);
+        m_spriteBatch.DrawString(
+            spriteFont: m_menuFont,
+            text: "{" + e.ToString() + "}",
+            position: new Vector2(30, m_screenHeight*3/5 + offset),
+            color: Color.LimeGreen,
+            rotation: 0f,
+            origin: new Vector2(0,0),
+            effects: SpriteEffects.None,
+            scale: m_fontScaling,
+            layerDepth: 0
+            );
       }
       else
       {
-        m_spriteBatch.DrawString(m_menuFont, e.ToString(), new Vector2(30, m_screenHeight*3/5 + offset), Color.White);
+        m_spriteBatch.DrawString(
+            spriteFont: m_menuFont,
+            text: e.ToString(),
+            position: new Vector2(30, m_screenHeight*3/5 + offset),
+            color: Color.White,
+            rotation: 0f,
+            origin: new Vector2(0,0),
+            effects: SpriteEffects.None,
+            scale: m_fontScaling,
+            layerDepth: 0
+            );
       }
-      offset += 24;
+      offset += 20;
     }
     m_spriteBatch.End();
   }
