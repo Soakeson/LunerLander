@@ -35,7 +35,7 @@ class CreditsView : State
         spriteFont: m_creditFont,
         text: "Created by:\n Skyler Oakeson", 
         position: new Vector2(20, yPos < m_screenHeight-stringSize.Y ? yPos : m_screenHeight-stringSize.Y), 
-        color: Color.White,
+        color: Color.Silver,
         rotation: 0f,
         origin: new Vector2(0,0),
         effects: SpriteEffects.None,

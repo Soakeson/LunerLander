@@ -8,7 +8,8 @@ using CS5410.Input;
 class MainMenuView : State
 {
   private SpriteFont m_menuFont;
-  private float m_fontScaling = .3f;
+  private float m_fontScaling = .5f;
+  private Vector2 m_titleSize;
   private LinkedListNode<KeyValuePair<MainMenuEnum, StateEnum>> m_currSelect;
   private LinkedList<KeyValuePair<MainMenuEnum, StateEnum>> m_mainMenu;
  
@@ -36,6 +37,7 @@ class MainMenuView : State
   override public void loadContent(ContentManager contentManager)
   {
     m_menuFont = contentManager.Load<SpriteFont>("Fonts/Micro5");
+    m_titleSize = m_menuFont.MeasureString("LUNAR LANDER");
   }
 
   override public StateEnum processInput(GameTime gameTime)
@@ -52,39 +54,47 @@ class MainMenuView : State
   override public void render(GameTime gameTime)
   {
     m_spriteBatch.Begin(SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+    drawOutlineText(
+        spriteBatch: m_spriteBatch, 
+        font: m_menuFont, 
+        text: "LUNAR LANDER",
+        outlineColor: Color.White,
+        frontColor: Color.Black,
+        pixelOffset: 4,
+        position: new Vector2((m_screenWidth - m_titleSize.X)/2 ,30),
+        scale: 1.0f
+        );
     int offset = 0;
     foreach(MainMenuEnum e in MainMenuEnum.GetValues(typeof(MainMenuEnum)))
     {
       // If item has been selected render differently
       if (m_currSelect.Value.Key == e)
       {
-        m_spriteBatch.DrawString(
-            spriteFont: m_menuFont,
-            text: "{" + e.ToString() + "}",
-            position: new Vector2(30, m_screenHeight*3/5 + offset),
-            color: Color.LimeGreen,
-            rotation: 0f,
-            origin: new Vector2(0,0),
-            effects: SpriteEffects.None,
+        drawOutlineText(
+            spriteBatch: m_spriteBatch,
+            font: m_menuFont,
+            text: e.ToString(),
+            position: new Vector2(30, m_screenHeight/2 + offset),
+            frontColor: Color.Black,
+            outlineColor: Color.White,
             scale: m_fontScaling,
-            layerDepth: 0
+            pixelOffset: 4
             );
       }
       else
       {
-        m_spriteBatch.DrawString(
-            spriteFont: m_menuFont,
+        drawOutlineText(
+            spriteBatch: m_spriteBatch,
+            font: m_menuFont,
             text: e.ToString(),
-            position: new Vector2(30, m_screenHeight*3/5 + offset),
-            color: Color.White,
-            rotation: 0f,
-            origin: new Vector2(0,0),
-            effects: SpriteEffects.None,
+            position: new Vector2(30, m_screenHeight/2 + offset),
+            frontColor: Color.Black,
+            outlineColor: Color.Green,
             scale: m_fontScaling,
-            layerDepth: 0
+            pixelOffset: 4
             );
       }
-      offset += 20;
+      offset += 50;
     }
     m_spriteBatch.End();
   }
