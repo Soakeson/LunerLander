@@ -6,6 +6,7 @@ public enum StateEnum
   MainMenu,
   Game,
   Options,
+  Controls,
   Scores,
   Credits,
   Exit,
