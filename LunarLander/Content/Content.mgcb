@@ -18,32 +18,11 @@
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Color
-/build:Fonts/Micro5.spritefont
+/build:Fonts/Micro5-100.spritefont
 
-#begin Fonts/KodeMonoB.spritefont
+#begin Fonts/Micro5.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Color
-/build:Fonts/KodeMonoB.spritefont
-
-#begin Fonts/KodeMonoR.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:Fonts/KodeMonoR.spritefont
-
-#begin Fonts/KodeMonoSB.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:Fonts/KodeMonoSB.spritefont
-
-#begin Fonts/KodeMonoM.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Color
-/build:Fonts/KodeMonoM.spritefont
+/build:Fonts/Micro5-50.spritefont

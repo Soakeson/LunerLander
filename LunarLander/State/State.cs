@@ -11,7 +11,8 @@ public abstract class State : IState
   protected int m_screenHeight;
   protected KeyboardInput m_keyboard = new KeyboardInput();
 
-  public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics) {
+  public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics) 
+  {
     m_screenWidth = graphics.PreferredBackBufferWidth;
     m_screenHeight = graphics.PreferredBackBufferHeight;
     m_spriteBatch = new SpriteBatch(graphicsDevice);

@@ -9,9 +9,3 @@ public enum MainMenuEnum
     Credits,
     Exit,
 }
-
-[Flags]
-public enum OptionsMenuEnum
-{
-    Controls
-}

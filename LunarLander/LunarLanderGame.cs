@@ -24,7 +24,6 @@ public class LunarLanderGame : Game
         
         m_stateList = new Dictionary<StateEnum, State>();
         m_stateList.Add(StateEnum.MainMenu, new MainMenuView());
-        m_stateList.Add(StateEnum.Controls, new MainMenuView());
         m_stateList.Add(StateEnum.Game, new GameView());
         m_stateList.Add(StateEnum.Options, new OptionsView());
         m_stateList.Add(StateEnum.Scores, new ScoresView());
