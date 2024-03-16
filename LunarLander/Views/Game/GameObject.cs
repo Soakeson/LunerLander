@@ -10,12 +10,12 @@ public abstract class GameObject
 
     public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics)
     {
+        m_graphics = graphics;
         m_spriteBatch = new SpriteBatch(graphicsDevice);
         m_graphicsDevice = graphicsDevice;
-        m_graphics = graphics;
     }
 
     public abstract void Render();
-    public abstract void Update();
+    public abstract void Update(GameTime gameTime);
     public abstract void loadContent(ContentManager contentManager);
 }
