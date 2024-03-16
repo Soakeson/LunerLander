@@ -13,9 +13,8 @@ class OptionsView : State
     private Vector2 m_itemSize;
 
     private OptionStateEnum m_currState;
-    private Dictionary<OptionsEnum, Keys> m_controls;
-    private LinkedListNode<OptionsEnum> m_currSelect;
-    private LinkedList<OptionsEnum> m_optionsMenu;
+    private LinkedListNode<ControlsEnum> m_currSelect;
+    private LinkedList<ControlsEnum> m_optionsMenu;
 
     private enum OptionStateEnum
     {
@@ -27,10 +26,10 @@ class OptionsView : State
     {
         m_currState = OptionStateEnum.Selection;
 
-        m_optionsMenu = new LinkedList<OptionsEnum>();
-        m_optionsMenu.AddFirst(OptionsEnum.RotateRight);
-        m_optionsMenu.AddLast(OptionsEnum.RotateLeft);
-        m_optionsMenu.AddLast(OptionsEnum.Thrust);
+        m_optionsMenu = new LinkedList<ControlsEnum>();
+        m_optionsMenu.AddFirst(ControlsEnum.RotateRight);
+        m_optionsMenu.AddLast(ControlsEnum.RotateLeft);
+        m_optionsMenu.AddLast(ControlsEnum.Thrust);
 
         m_currSelect = m_optionsMenu.First;
 
@@ -83,10 +82,10 @@ class OptionsView : State
             );
 
         int idx = 0;
-        foreach (OptionsEnum option in m_optionsMenu)
+        foreach (ControlsEnum option in m_optionsMenu)
         {
             // If item has been selected render differently
-            if (m_currSelect.Value == option)
+            if (m_currSelect.Value == option && m_currState == OptionStateEnum.Selection)
             {
                 drawOutlineText(
                     spriteBatch: m_spriteBatch,
@@ -119,8 +118,10 @@ class OptionsView : State
 
     override public void update(GameTime gameTime)
     {
-        if (m_currState == OptionStateEnum.Listening)
-        {
-        }
+        // if (m_currState == OptionStateEnum.Listening)
+        // {
+        //     m_controls.SetKey(ControlsEnum.MenuUp, Keys.Up);
+        //     m_currState = OptionStateEnum.Selection;
+        // }
     }
 }

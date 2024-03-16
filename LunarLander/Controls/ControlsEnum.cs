@@ -1,7 +1,7 @@
 using System;
 
 [Flags]
-public enum Controls 
+public enum ControlsEnum
 {
     RotateLeft,
     RotateRight,

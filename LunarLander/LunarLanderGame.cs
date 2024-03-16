@@ -18,10 +18,10 @@ public class LunarLanderGame : Game
 
     protected override void Initialize()
     {
-        m_graphics.PreferredBackBufferWidth = 1920/2;
-        m_graphics.PreferredBackBufferHeight = 1080/2;
+        m_graphics.PreferredBackBufferWidth = 1920;
+        m_graphics.PreferredBackBufferHeight = 1080;
         m_graphics.ApplyChanges();
-        
+
         m_stateList = new Dictionary<StateEnum, State>();
         m_stateList.Add(StateEnum.MainMenu, new MainMenuView());
         m_stateList.Add(StateEnum.Game, new GameView());
@@ -31,10 +31,10 @@ public class LunarLanderGame : Game
         m_currState = m_stateList[StateEnum.MainMenu];
 
         // Initialize all states in the list
-        foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
+        foreach (StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
         {
-          if (e is not StateEnum.Exit)
-            m_stateList[e].initialize(GraphicsDevice, m_graphics);
+            if (e is not StateEnum.Exit)
+                m_stateList[e].initialize(GraphicsDevice, m_graphics);
         }
         base.Initialize();
     }
@@ -42,10 +42,10 @@ public class LunarLanderGame : Game
     protected override void LoadContent()
     {
         // Load content for all states
-        foreach(StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
+        foreach (StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
         {
-          if (e is not StateEnum.Exit)
-            m_stateList[e].loadContent(this.Content);
+            if (e is not StateEnum.Exit)
+                m_stateList[e].loadContent(this.Content);
         }
     }
 
@@ -54,12 +54,12 @@ public class LunarLanderGame : Game
         m_nextState = m_currState.processInput(gameTime);
         if (m_nextState == StateEnum.Exit)
         {
-          Exit();
+            Exit();
         }
         else
         {
-          m_currState = m_stateList[m_nextState];
-          m_currState.update(gameTime);
+            m_currState = m_stateList[m_nextState];
+            m_currState.update(gameTime);
         }
         base.Update(gameTime);
     }

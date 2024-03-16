@@ -10,6 +10,7 @@ public abstract class State : IState
   protected int m_screenWidth;
   protected int m_screenHeight;
   protected KeyboardInput m_keyboard = new KeyboardInput();
+  // protected ControlsManager m_controls = new ControlsManager();
 
   public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics) 
   {
