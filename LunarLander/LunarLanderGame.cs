@@ -18,8 +18,15 @@ public class LunarLanderGame : Game
 
     protected override void Initialize()
     {
-        m_graphics.PreferredBackBufferWidth = 1920;
-        m_graphics.PreferredBackBufferHeight = 1080;
+        m_graphics.PreferredBackBufferWidth = 1920/2;
+        m_graphics.PreferredBackBufferHeight = 1080/2;
+
+        m_graphics.GraphicsDevice.RasterizerState = new RasterizerState
+        {
+            FillMode = FillMode.WireFrame,
+            CullMode = CullMode.CullClockwiseFace, // remove counter-clockwise faces
+            MultiSampleAntiAlias = true,
+        };
         m_graphics.ApplyChanges();
 
         m_stateList = new Dictionary<StateEnum, State>();
