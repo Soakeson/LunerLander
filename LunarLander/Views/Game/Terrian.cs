@@ -12,7 +12,7 @@ public class Terrain : GameObject
     private BasicEffect m_effect;
     private VertexPositionColor[] m_vertInfo;
     private int[] m_vertIndex;
-    private LinkedList<(Point, bool)> m_skyLine;
+    public LinkedList<(Point, bool)> m_skyLine;
     private int m_width;
     private int m_height;
     MyRandom m_rand = new MyRandom();
@@ -97,7 +97,7 @@ public class Terrain : GameObject
     // Initialization public facing function for the recursive one.
     public void Generate()
     {
-        int startY = m_rand.Next((int)(m_height * .35), (int)(m_height * .75));
+        int startY = m_rand.Next((int)(m_height * .55), (int)(m_height * .8));
         int safeX = m_rand.Next((int)(m_width * .15), (int)(m_width * .75));
 
         // Add Start, End and Start and End of safe zone.

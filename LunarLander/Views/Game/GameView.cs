@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,18 +15,31 @@ class GameView : State
     public GameView()
     {
         m_entites = new Dictionary<EntityEnum, GameObject>();
-        m_entites.Add(EntityEnum.Lander, new Lander(100, 100));
 
         m_keyboard.registerCommand(Keys.Space, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
                     {
                         Lander l = (Lander)m_entites[EntityEnum.Lander];
                         l.Thrust(gameTime);
                     }));
+
+        m_keyboard.registerCommand(Keys.D, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
+                    {
+                        Lander l = (Lander)m_entites[EntityEnum.Lander];
+                        l.RotateRight(gameTime);
+                    }));
+
+        m_keyboard.registerCommand(Keys.A, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
+                    {
+                        Lander l = (Lander)m_entites[EntityEnum.Lander];
+                        l.RotateLeft(gameTime);
+                    }));
     }
 
     override public void loadContent(ContentManager contentManager)
     {
-        m_entites.Add(EntityEnum.Terrian, new Terrain(m_screenWidth, m_screenHeight));
+        Terrain t = new Terrain(m_screenWidth, m_screenHeight);
+        m_entites.Add(EntityEnum.Terrian, t);
+        m_entites.Add(EntityEnum.Lander, new Lander(100, 100, t.m_skyLine));
 
         // Initialize all entities
         foreach (GameObject entity in m_entites.Values)
@@ -52,6 +66,8 @@ class GameView : State
             // Returns to main menu
             Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
             t.Generate();
+            Lander l = (Lander)m_entites[EntityEnum.Lander];
+            l.Reset(t.m_skyLine);
         }
         m_keyboard.Update(gameTime);
         return StateEnum.Game;
@@ -65,10 +81,9 @@ class GameView : State
 
     override public void update(GameTime gameTime)
     {
-        foreach (GameObject entity in m_entites.Values)
-        {
-            entity.Update(gameTime);
-        }
-
+        Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
+        Lander l = (Lander)m_entites[EntityEnum.Lander];
+        l.Update(gameTime);
     }
+
 }
