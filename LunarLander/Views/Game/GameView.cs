@@ -86,7 +86,7 @@ class GameView : State
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
                 font: m_itemFont,
-                text: "Fuel: " + ((int)l.m_fuel).ToString(),
+                text: $"Fuel: {(int)l.m_fuel}" ,
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
@@ -96,7 +96,7 @@ class GameView : State
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
                 font: m_itemFont,
-                text: "X-Dir: " + (l.m_angle.X).ToString(),
+                text: $"Dir: ({l.m_angle.X}, {l.m_angle.Y})",
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
@@ -106,7 +106,7 @@ class GameView : State
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
                 font: m_itemFont,
-                text: "Y-Dir: " + (l.m_angle.Y).ToString(),
+                text: "Pos: (" + ((int)l.m_position.X).ToString() + " , " + ((int)l.m_position.Y).ToString() + ")",
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
@@ -116,7 +116,7 @@ class GameView : State
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
                 font: m_itemFont,
-                text: "Pos: (" + ((int)l.m_position.X).ToString() + " , " + ((int)l.m_position.Y).ToString() + ")",
+                text: $"Speed: {(int)l.m_speed}",
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
@@ -135,7 +135,7 @@ class GameView : State
         // Check if win or dead
         if (!l.m_alive)
         {
-            if (l.m_angle.Y < -.95f && l.m_touchSafeZone)
+            if (l.m_angle.Y < -.95f && l.m_touchSafeZone && l.m_speed < 30)
             {
                 Console.WriteLine("WINNER");
             }

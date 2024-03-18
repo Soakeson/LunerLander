@@ -7,30 +7,25 @@ using Microsoft.Xna.Framework.Content;
 public class Lander : GameObject
 {
     private Texture2D m_sprite;
-    public Vector2 m_velocity;
-    public Vector2 m_position;
-    private Vector2 m_original;
-    private Vector2 m_gravity;
-    public Vector2 m_angle;
-    public float m_rotation;
-    public float m_fuel;
     private TimeSpan m_lastTime;
     private Vector3 m_hitBox;
     private LinkedList<(Point, bool)> m_skyLine;
+    private Vector2 m_original;
+    public Vector2 m_position;
     public bool m_alive = true;
     public bool m_touchSafeZone = false;
-    
+    public double m_speed = 0;
+    public Vector2 m_gravity = new Vector2(0, 0.001152f);
+    public Vector2 m_velocity = new Vector2(1, 0);
+    public Vector2 m_angle = new Vector2(0, -1);
+    public float m_rotation = 0f;
+    public float m_fuel = 100f;
 
     public Lander(int x, int y, LinkedList<(Point, bool)> skyLine)
     {
         m_original = new Vector2(x, y);
         m_position = new Vector2(x, y);
         m_hitBox = new Vector3(x, y, 18.5f);
-        m_gravity = new Vector2(0, 0.001152f);
-        m_velocity = new Vector2(1, 0);
-        m_angle = new Vector2(0, -1);
-        m_rotation = 0f;
-        m_fuel = 100f;
         m_skyLine = skyLine;
     }
 
@@ -59,10 +54,10 @@ public class Lander : GameObject
     public override void Update(GameTime gameTime)
     {
         TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
-
         // Update gravity
         if (m_alive)
         {
+            m_speed = Math.Sqrt((int)Math.Abs(m_velocity.X*1000)^2 + (int)Math.Abs(m_velocity.Y*1000)^2);
             m_velocity += m_gravity * diff.Milliseconds; 
 
             //Update position with the next velocity update
@@ -90,7 +85,7 @@ public class Lander : GameObject
         if (m_fuel > 0.0f && m_alive)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
-            m_velocity += m_angle * (.0027f * diff.Milliseconds);
+            m_velocity += m_angle * .0027f * diff.Milliseconds;
             m_fuel -= .01f * diff.Milliseconds;
         }
     }
@@ -108,7 +103,7 @@ public class Lander : GameObject
 
     public void RotateRight(GameTime gameTime)
     {
-        if (m_fuel > 0 && m_alive)
+        if (m_fuel > 0.0f && m_alive)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_rotation += .02f;
