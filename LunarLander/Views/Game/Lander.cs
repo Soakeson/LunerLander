@@ -13,6 +13,7 @@ public class Lander : GameObject
     private Vector2 m_original;
     public Vector2 m_position;
     public bool m_alive = true;
+    public bool m_active = true;
     public bool m_touchSafeZone = false;
     public double m_speed = 0;
     public Vector2 m_gravity = new Vector2(0, 0.001152f);
@@ -55,9 +56,9 @@ public class Lander : GameObject
     {
         TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
         // Update gravity
-        if (m_alive)
+        m_speed = Math.Sqrt((int)Math.Abs(m_velocity.X*1000)^2 + (int)Math.Abs(m_velocity.Y*1000)^2);
+        if (m_active)
         {
-            m_speed = Math.Sqrt((int)Math.Abs(m_velocity.X*1000)^2 + (int)Math.Abs(m_velocity.Y*1000)^2);
             m_velocity += m_gravity * diff.Milliseconds; 
 
             //Update position with the next velocity update
@@ -71,18 +72,24 @@ public class Lander : GameObject
             m_hitBox.Y = m_position.Y;
 
             // Set collision check if it is different and if true set velecoity to zero
-            if (CollisionDetection()) 
+            int collision = CollisionDetection();
+
+            // If collision check if it was going to fast or at too steep of an angle then set alive status
+            if (collision != 0) 
             {
-                m_alive = false;
+                m_active = false;
                 m_velocity = new Vector2(0, 0);
+                if ((collision == 1 || collision == -1) && (m_angle.Y > -.95f || m_speed > 30))
+                {
+                    m_alive = false;
+                }
             }
         }
-
     }
 
     public void Thrust(GameTime gameTime)
     {
-        if (m_fuel > 0.0f && m_alive)
+        if (m_fuel > 0.0f && m_active)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_velocity += m_angle * .0027f * diff.Milliseconds;
@@ -92,7 +99,7 @@ public class Lander : GameObject
 
     public void RotateLeft(GameTime gameTime)
     {
-        if (m_fuel > 0.0f && m_alive)
+        if (m_fuel > 0.0f && m_active)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_rotation -= .02f;
@@ -103,7 +110,7 @@ public class Lander : GameObject
 
     public void RotateRight(GameTime gameTime)
     {
-        if (m_fuel > 0.0f && m_alive)
+        if (m_fuel > 0.0f && m_active)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_rotation += .02f;
@@ -123,28 +130,34 @@ public class Lander : GameObject
         m_hitBox.Y = m_original.Y;
         m_skyLine = newSkyLine;
         m_alive = true;
+        m_active = true;
         m_touchSafeZone = false;
     }
 
-    public bool CollisionDetection()
+    public int CollisionDetection()
     {
         for (LinkedListNode<(Point, bool)> p = m_skyLine.First; p != null; p = p.Next)
         {
             if (p.Next != null)
             {
                 bool res = LineCircleIntersection(p.Value.Item1, p.Next.Value.Item1);
-                if (res && p.Value.Item2 && p.Value.Item2)
+
+                // Safe zone
+                if (res && p.Value.Item2 && p.Value.Item2 && m_active)
                 {
-                    m_touchSafeZone = true;
-                    return true;
+                    return 1;
                 }
-                if (res)
+
+                // Unsafe zone
+                if (res && m_active)
                 {
-                    return true;
+                    return -1;
                 }
             }
         }
-        return false;
+
+        // No hit detected
+        return 0;
     }
 
     private bool LineCircleIntersection(Point p1, Point p2) 

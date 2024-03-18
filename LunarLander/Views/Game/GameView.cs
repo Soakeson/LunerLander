@@ -123,6 +123,32 @@ class GameView : State
                 position: new Vector2(10, 75),
                 scale: .5f 
                 );
+        if (l.m_alive && !l.m_active)
+        {
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: $"WINNER",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 100),
+                scale: .5f 
+                );
+        }
+        if (!l.m_alive && !l.m_active)
+        {
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: $"LOSER",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 100),
+                scale: .5f 
+                );
+        }
         m_spriteBatch.End();
     }
 
@@ -131,19 +157,5 @@ class GameView : State
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
         Lander l = (Lander)m_entites[EntityEnum.Lander];
         l.Update(gameTime);
-
-        // Check if win or dead
-        if (!l.m_alive)
-        {
-            if (l.m_angle.Y < -.95f && l.m_touchSafeZone && l.m_speed < 30)
-            {
-                Console.WriteLine("WINNER");
-            }
-            else
-            {
-                Console.WriteLine("LOSER");
-            }
-
-        }
     }
 }
