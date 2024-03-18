@@ -11,6 +11,7 @@ class GameView : State
 
     private Terrain m_generator;
     private Dictionary<EntityEnum, GameObject> m_entites;
+    private SpriteFont m_itemFont;
 
     public GameView()
     {
@@ -40,6 +41,7 @@ class GameView : State
         Terrain t = new Terrain(m_screenWidth, m_screenHeight);
         m_entites.Add(EntityEnum.Terrian, t);
         m_entites.Add(EntityEnum.Lander, new Lander(100, 100, t.m_skyLine));
+        m_itemFont = contentManager.Load<SpriteFont>("Fonts/Micro5-50");
 
         // Initialize all entities
         foreach (GameObject entity in m_entites.Values)
@@ -76,7 +78,52 @@ class GameView : State
     override public void render(GameTime gameTime)
     {
         m_entites[EntityEnum.Terrian].Render();
-        m_entites[EntityEnum.Lander].Render();
+        Lander l = (Lander)m_entites[EntityEnum.Lander];
+        l.Render();
+
+        // Render Readout
+        m_spriteBatch.Begin();
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: "Fuel: " + ((int)l.m_fuel).ToString(),
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 0),
+                scale: .5f 
+                );
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: "X-Dir: " + (l.m_angle.X).ToString(),
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 25),
+                scale: .5f 
+                );
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: "Y-Dir: " + (l.m_angle.Y).ToString(),
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 50),
+                scale: .5f 
+                );
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: "Pos: (" + ((int)l.m_position.X).ToString() + " , " + ((int)l.m_position.Y).ToString() + ")",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 75),
+                scale: .5f 
+                );
+        m_spriteBatch.End();
     }
 
     override public void update(GameTime gameTime)
@@ -84,6 +131,19 @@ class GameView : State
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
         Lander l = (Lander)m_entites[EntityEnum.Lander];
         l.Update(gameTime);
-    }
 
+        // Check if win or dead
+        if (!l.m_alive)
+        {
+            if (l.m_angle.Y < -.95f && l.m_touchSafeZone)
+            {
+                Console.WriteLine("WINNER");
+            }
+            else
+            {
+                Console.WriteLine("LOSER");
+            }
+
+        }
+    }
 }

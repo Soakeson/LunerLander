@@ -18,8 +18,8 @@ public class LunarLanderGame : Game
 
     protected override void Initialize()
     {
-        m_graphics.PreferredBackBufferWidth = 1920;
-        m_graphics.PreferredBackBufferHeight = 1080;
+        m_graphics.PreferredBackBufferWidth = 1920/2;
+        m_graphics.PreferredBackBufferHeight = 1080/2;
 
         m_graphics.ApplyChanges();
 

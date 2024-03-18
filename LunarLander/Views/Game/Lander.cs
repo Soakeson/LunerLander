@@ -8,7 +8,7 @@ public class Lander : GameObject
 {
     private Texture2D m_sprite;
     public Vector2 m_velocity;
-    private Vector2 m_position;
+    public Vector2 m_position;
     private Vector2 m_original;
     private Vector2 m_gravity;
     public Vector2 m_angle;
@@ -17,14 +17,15 @@ public class Lander : GameObject
     private TimeSpan m_lastTime;
     private Vector3 m_hitBox;
     private LinkedList<(Point, bool)> m_skyLine;
-    private bool m_collided;
+    public bool m_alive = true;
+    public bool m_touchSafeZone = false;
     
 
     public Lander(int x, int y, LinkedList<(Point, bool)> skyLine)
     {
         m_original = new Vector2(x, y);
         m_position = new Vector2(x, y);
-        m_hitBox = new Vector3(x, y, 19f);
+        m_hitBox = new Vector3(x, y, 18.5f);
         m_gravity = new Vector2(0, 0.001152f);
         m_velocity = new Vector2(1, 0);
         m_angle = new Vector2(0, -1);
@@ -60,33 +61,33 @@ public class Lander : GameObject
         TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
 
         // Update gravity
-        if (!m_collided)
+        if (m_alive)
         {
             m_velocity += m_gravity * diff.Milliseconds; 
+
+            //Update position with the next velocity update
+            m_position += m_velocity;
+
+            // Update clock
+            m_lastTime = gameTime.TotalGameTime;
+
+            //Set Hitbox to follow lander
+            m_hitBox.X = m_position.X;
+            m_hitBox.Y = m_position.Y;
+
+            // Set collision check if it is different and if true set velecoity to zero
+            if (CollisionDetection()) 
+            {
+                m_alive = false;
+                m_velocity = new Vector2(0, 0);
+            }
         }
 
-        //Update position with the next velocity update
-        m_position += m_velocity;
-
-        // Update clock
-        m_lastTime = gameTime.TotalGameTime;
-
-        //Set Hitbox to follow lander
-        m_hitBox.X = m_position.X;
-        m_hitBox.Y = m_position.Y;
-
-        // Set collision check if it is different and if true set velecoity to zero
-        bool collision = CollisionDetection();
-        if (collision != m_collided) 
-        {
-            m_collided = collision;
-            if (collision) {m_velocity = new Vector2(0, 0);};
-        }
     }
 
     public void Thrust(GameTime gameTime)
     {
-        if (m_fuel > 0.0f)
+        if (m_fuel > 0.0f && m_alive)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_velocity += m_angle * (.0027f * diff.Milliseconds);
@@ -96,7 +97,7 @@ public class Lander : GameObject
 
     public void RotateLeft(GameTime gameTime)
     {
-        if (m_fuel > 0.0f)
+        if (m_fuel > 0.0f && m_alive)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_rotation -= .02f;
@@ -107,7 +108,7 @@ public class Lander : GameObject
 
     public void RotateRight(GameTime gameTime)
     {
-        if (m_fuel > 0)
+        if (m_fuel > 0 && m_alive)
         {
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_rotation += .02f;
@@ -119,13 +120,15 @@ public class Lander : GameObject
     public void Reset(LinkedList<(Point, bool)> newSkyLine)
     {
         m_position = m_original;
-        m_fuel = 1000f;
+        m_fuel = 100f;
         m_rotation = 0f;
         m_angle = new Vector2(0, -1);
         m_velocity = new Vector2(1, 0);
         m_hitBox.X = m_original.X;
         m_hitBox.Y = m_original.Y;
         m_skyLine = newSkyLine;
+        m_alive = true;
+        m_touchSafeZone = false;
     }
 
     public bool CollisionDetection()
@@ -137,6 +140,7 @@ public class Lander : GameObject
                 bool res = LineCircleIntersection(p.Value.Item1, p.Next.Value.Item1);
                 if (res && p.Value.Item2 && p.Value.Item2)
                 {
+                    m_touchSafeZone = true;
                     return true;
                 }
                 if (res)

@@ -105,11 +105,11 @@ public class Terrain : GameObject
         m_skyLine.AddFirst((new Point(0, startY), false));
         m_skyLine.AddLast((new Point(m_width, startY), false));
         m_skyLine.AddAfter(m_skyLine.First, (new Point(safeX, startY), true));
-        m_skyLine.AddAfter(m_skyLine.First.Next, (new Point(safeX + (int)(m_width * .07), startY), true));
+        m_skyLine.AddAfter(m_skyLine.First.Next, (new Point(safeX + (int)(m_width * .1), startY), true));
 
         // Generate in two chunks; Before and After the safe zone.
-        Generate(m_skyLine.First, m_skyLine.First.Next, 9, 0);
-        Generate(m_skyLine.Last.Previous, m_skyLine.Last, 9, 0);
+        Generate(m_skyLine.First, m_skyLine.First.Next, 7, 0);
+        Generate(m_skyLine.Last.Previous, m_skyLine.Last, 7, 0);
 
         m_vertInfo = new VertexPositionColor[m_skyLine.Count * 3];
         m_vertIndex = new int[m_skyLine.Count * 3];
