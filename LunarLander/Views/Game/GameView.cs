@@ -12,8 +12,10 @@ class GameView : State
     private Terrain m_generator;
     private Dictionary<EntityEnum, GameObject> m_entites;
     private SpriteFont m_itemFont;
+    private int m_timer = 3000;
     private int m_score;
     private int m_level;
+    private TimeSpan m_lastTime;
 
     public GameView()
     {
@@ -152,6 +154,19 @@ class GameView : State
                 scale: .5f 
                 );
         }
+        if (m_timer >= 0)
+        {
+            drawOutlineText(
+                    spriteBatch: m_spriteBatch,
+                    font: m_itemFont,
+                    text: $"{m_timer / 1000}",
+                    frontColor: Color.Red,
+                    outlineColor: Color.White,
+                    pixelOffset: 4,
+                    position: new Vector2(m_screenWidth/2, m_screenHeight/2),
+                    scale: 1f 
+                    );
+        }
         m_spriteBatch.End();
     }
 
@@ -159,8 +174,13 @@ class GameView : State
     {
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
         Lander l = (Lander)m_entites[EntityEnum.Lander];
-        
-        l.Update(gameTime);
+        TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
+        m_lastTime = gameTime.TotalGameTime;
+        m_timer -= diff.Milliseconds;
+        if (m_timer < 0) 
+        {
+            l.Update(gameTime);
+        }
         if (!l.m_active && l.m_alive)
         {
             m_score = (int)l.m_fuel;

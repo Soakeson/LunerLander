@@ -14,8 +14,9 @@ public class ParticleSystem
     private float m_speedStDev; // pixles per millisecond
     private float m_lifetimeMean; // milliseconds
     private float m_lifetimeStdDev; // milliseconds
+    private Vector2? m_direction = null;
 
-    public ParticleSystem(Vector2 center, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev)
+    public ParticleSystem(Vector2 center, int sizeMean, int sizeStdDev, float speedMean, float speedStdDev, int lifetimeMean, int lifetimeStdDev, Vector2? dir)
     {
         m_center = center;
         m_sizeMean = sizeMean;
@@ -24,14 +25,16 @@ public class ParticleSystem
         m_speedStDev = speedStdDev;
         m_lifetimeMean = lifetimeMean;
         m_lifetimeStdDev = lifetimeStdDev;
+        m_direction = dir;
     }
 
     private Particle create()
     {
         float size = (float)m_random.nextGaussian(m_sizeMean, m_sizeStdDev);
+        Vector2 dir = m_direction != null ? (Vector2)m_direction : m_random.nextCircleVector();
         var p = new Particle(
                 m_center,
-                m_random.nextCircleVector(),
+                dir,
                 (float)m_random.nextGaussian(m_speedMean, m_speedStDev),
                 new Vector2(size, size),
                 new System.TimeSpan(0, 0, 0, 0, (int)(m_random.nextGaussian(m_lifetimeMean, m_lifetimeStdDev)))); ;
@@ -39,10 +42,11 @@ public class ParticleSystem
         return p;
     }
 
-    public void update(GameTime gameTime, Vector2? newPos)
+    public void update(GameTime gameTime, Vector2? newPos, Vector2? newDir)
     {
         // Update existing particles
         m_center = newPos != null ? (Vector2)newPos : m_center;
+        m_direction = newDir != null ? (Vector2)newDir : m_direction;
         List<long> removeMe = new List<long>();
         foreach (Particle p in m_particles.Values)
         {

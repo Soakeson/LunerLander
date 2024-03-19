@@ -11,11 +11,12 @@ public class Lander : GameObject
     private Vector3 m_hitBox;
     private LinkedList<(Point, bool)> m_skyLine;
     private Vector2 m_original;
-    private ParticleSystem m_fireSystem;
+    private ParticleSystem m_thrustParticleSystem;
     private ParticleSystem m_explosionParticleSystem;
-    private ParticleSystemRenderer m_fireRenderer;
+    private ParticleSystemRenderer m_thrustRenderer;
     private ParticleSystemRenderer m_explosionRenderer;
     private int m_explosionDuration = 1000;
+    private int m_thrustDuration = 100;
     public Vector2 m_position;
     public bool m_alive = true;
     public bool m_active = true;
@@ -40,7 +41,20 @@ public class Lander : GameObject
             0.25f,
             0.05f,
             400,
-            100);
+            100,
+            null);
+
+        m_thrustParticleSystem = new ParticleSystem(
+            m_position,
+            10,
+            4,
+            0.15f,
+            0.05f,
+            200,
+            50,
+            -m_angle);
+
+        m_thrustRenderer = new ParticleSystemRenderer("Images/fire");
         m_explosionRenderer = new ParticleSystemRenderer("Images/fire");
     }
 
@@ -49,6 +63,10 @@ public class Lander : GameObject
         if (!m_alive && m_explosionDuration > 0)
         {
             m_explosionRenderer.draw(m_spriteBatch, m_explosionParticleSystem);
+        }
+        if (m_alive && m_thrustDuration > 0)
+        {
+            m_thrustRenderer.draw(m_spriteBatch, m_thrustParticleSystem);
         }
         if (m_alive)
         {
@@ -71,6 +89,7 @@ public class Lander : GameObject
     {
         m_sprite = contentManager.Load<Texture2D>("Images/lander");
         m_explosionRenderer.LoadContent(contentManager);
+        m_thrustRenderer.LoadContent(contentManager);
     }
 
     public override void Update(GameTime gameTime)
@@ -80,7 +99,7 @@ public class Lander : GameObject
         // If dead update particle system with current position and gameTime
         if (!m_alive)
         {
-            m_explosionParticleSystem.update(gameTime, m_position);
+            m_explosionParticleSystem.update(gameTime, m_position, null);
             m_explosionDuration -= diff.Milliseconds;
         }
 
@@ -100,6 +119,10 @@ public class Lander : GameObject
             //Set Hitbox to follow lander
             m_hitBox.X = m_position.X;
             m_hitBox.Y = m_position.Y;
+            
+            // Update thrust particles
+            m_thrustParticleSystem.update(gameTime, new Vector2(m_position.X, m_position.Y), -m_angle);
+            m_thrustDuration -= diff.Milliseconds;
 
             // Set collision check if it is different and if true set velecoity to zero
             int collision = CollisionDetection();
@@ -109,7 +132,11 @@ public class Lander : GameObject
             {
                 m_active = false;
                 m_velocity = new Vector2(0, 0);
-                if ((collision == 1 || collision == -1) && (m_angle.Y > -.95f || m_speed > 30))
+                if (collision == 1 && (m_angle.Y > -.95f || m_speed > 30))
+                {
+                    m_alive = false;
+                }
+                if (collision == -1)
                 {
                     m_alive = false;
                 }
@@ -124,6 +151,7 @@ public class Lander : GameObject
             TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
             m_velocity += m_angle * .0027f * diff.Milliseconds;
             m_fuel -= .01f * diff.Milliseconds;
+            m_thrustDuration = 100;
         }
     }
 
@@ -169,7 +197,8 @@ public class Lander : GameObject
             0.25f,
             0.05f,
             400,
-            100);
+            100,
+            null);
     }
 
     public int CollisionDetection()
