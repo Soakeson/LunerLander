@@ -22,7 +22,7 @@ public class Lander : GameObject
     public bool m_active = true;
     public double m_speed = 0;
     public Vector2 m_gravity = new Vector2(0, 0.001152f);
-    public Vector2 m_velocity = new Vector2(1, 0);
+    public Vector2 m_velocity = new Vector2(2, 1);
     public Vector2 m_angle = new Vector2(0, -1);
     public float m_rotation = 0f;
     public float m_fuel = 100f;
@@ -132,7 +132,7 @@ public class Lander : GameObject
             {
                 m_active = false;
                 m_velocity = new Vector2(0, 0);
-                if (collision == 1 && (m_angle.Y > -.95f || m_speed > 30))
+                if (collision == 1 && (m_angle.Y > -.97f || m_speed > 30))
                 {
                     m_alive = false;
                 }
@@ -184,7 +184,7 @@ public class Lander : GameObject
         m_fuel = 100f;
         m_rotation = 0f;
         m_angle = new Vector2(0, -1);
-        m_velocity = new Vector2(1, 0);
+        m_velocity = new Vector2(2, 1);
         m_hitBox.X = m_original.X;
         m_hitBox.Y = m_original.Y;
         m_skyLine = newSkyLine;

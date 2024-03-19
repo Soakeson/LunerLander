@@ -26,7 +26,6 @@ class GameView : State
                     {
                         Lander l = (Lander)m_entites[EntityEnum.Lander];
                         l.Thrust(gameTime);
-                        // render thrust
                     }));
 
         m_keyboard.registerCommand(Keys.D, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
@@ -71,20 +70,38 @@ class GameView : State
             // Returns to main menu
             return StateEnum.MainMenu;
         }
+
         if (Keyboard.GetState().IsKeyDown(Keys.R))
         {
             ResetGame(false, gameTime);
         }
+
         if (m_state == GameStateEnum.Gameplay)
         {
             m_keyboard.Update(gameTime);
         }
+
+        if (m_state == GameStateEnum.Lost && m_timer < 0)
+        {
+            m_state = GameStateEnum.Waiting;
+            ResetGame(false, gameTime);
+            return StateEnum.MainMenu;
+        }
+
+        if (m_level == 1 && m_state == GameStateEnum.Won && m_timer < 0)
+        {
+            m_state = GameStateEnum.Waiting;
+            ResetGame(false, gameTime);
+            return StateEnum.Scores;
+        }
+
         return StateEnum.Game;
     }
 
     private void ResetGame(bool next, GameTime gameTime)
     {
         if (next) m_level++;
+        else {m_level = 0; m_score = 0;};
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
         t.Generate();
         Lander l = (Lander)m_entites[EntityEnum.Lander];
@@ -211,7 +228,7 @@ class GameView : State
         m_lastTime = gameTime.TotalGameTime;
         m_timer -= diff.Milliseconds;
 
-        if (m_timer < 0)
+        if (m_state == GameStateEnum.Waiting && m_timer < 0)
         {
             m_state = GameStateEnum.Gameplay;
         }
@@ -219,19 +236,22 @@ class GameView : State
         if (m_state == GameStateEnum.Gameplay) 
         {
             l.Update(gameTime);
-            if (!l.m_active && l.m_alive) m_state = GameStateEnum.Won;
-            if (!l.m_active && !l.m_alive) m_state = GameStateEnum.Lost;
+            if (!l.m_active && l.m_alive) {m_timer = 3000; m_state = GameStateEnum.Won;};
+            if (!l.m_active && !l.m_alive) {m_timer = 3000; m_state = GameStateEnum.Lost;};
         }
 
         if (m_state == GameStateEnum.Won)
         {
+            l.Update(gameTime);
             m_score += (int)l.m_fuel;
-            ResetGame(true, gameTime);
+            if (m_timer < 0 && m_level < 1)
+            {
+                ResetGame(true, gameTime);
+            }
         }
-
         if (m_state == GameStateEnum.Lost)
         {
-            ResetGame(true, gameTime);
+            l.Update(gameTime);
         }
     }
 }

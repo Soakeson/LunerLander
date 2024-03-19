@@ -25,7 +25,7 @@ class ScoresView : State
       // Returns to main menu
       return StateEnum.MainMenu;
     }
-    return StateEnum.Game;
+    return StateEnum.Scores;
   }
 
   override public void render(GameTime gameTime)
