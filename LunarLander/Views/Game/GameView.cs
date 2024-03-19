@@ -10,11 +10,12 @@ class GameView : State
 {
 
     private Terrain m_generator;
+    private GameStateEnum m_state;
     private Dictionary<EntityEnum, GameObject> m_entites;
     private SpriteFont m_itemFont;
     private int m_timer = 3000;
     private int m_score;
-    private int m_level;
+    private int m_level = 0;
     private TimeSpan m_lastTime;
 
     public GameView()
@@ -39,6 +40,8 @@ class GameView : State
                         Lander l = (Lander)m_entites[EntityEnum.Lander];
                         l.RotateLeft(gameTime);
                     }));
+
+        m_state = GameStateEnum.Waiting;
     }
 
     override public void loadContent(ContentManager contentManager)
@@ -70,14 +73,24 @@ class GameView : State
         }
         if (Keyboard.GetState().IsKeyDown(Keys.R))
         {
-            // Returns to main menu
-            Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
-            t.Generate();
-            Lander l = (Lander)m_entites[EntityEnum.Lander];
-            l.Reset(t.m_skyLine);
+            ResetGame(false, gameTime);
         }
-        m_keyboard.Update(gameTime);
+        if (m_state == GameStateEnum.Gameplay)
+        {
+            m_keyboard.Update(gameTime);
+        }
         return StateEnum.Game;
+    }
+
+    private void ResetGame(bool next, GameTime gameTime)
+    {
+        if (next) m_level++;
+        Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
+        t.Generate();
+        Lander l = (Lander)m_entites[EntityEnum.Lander];
+        l.Reset(t.m_skyLine, gameTime);
+        m_timer = 3000;
+        m_state = GameStateEnum.Waiting;
     }
 
     override public void render(GameTime gameTime)
@@ -128,7 +141,27 @@ class GameView : State
                 position: new Vector2(10, 75),
                 scale: .5f 
                 );
-        if (l.m_alive && !l.m_active)
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: $"Level: {m_level+1}",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 100),
+                scale: .5f 
+                );
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: $"Score: {m_score}",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2(10, 125),
+                scale: .5f 
+                );
+        if (m_state == GameStateEnum.Won)
         {
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
@@ -137,11 +170,11 @@ class GameView : State
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
-                position: new Vector2(10, 100),
+                position: new Vector2(10, 150),
                 scale: .5f 
                 );
         }
-        if (!l.m_alive && !l.m_active)
+        if (m_state == GameStateEnum.Lost)
         {
             drawOutlineText(
                 spriteBatch: m_spriteBatch,
@@ -150,11 +183,11 @@ class GameView : State
                 frontColor: Color.Black,
                 outlineColor: Color.White,
                 pixelOffset: 4,
-                position: new Vector2(10, 100),
+                position: new Vector2(10, 150),
                 scale: .5f 
                 );
         }
-        if (m_timer >= 0)
+        if (m_state == GameStateEnum.Waiting)
         {
             drawOutlineText(
                     spriteBatch: m_spriteBatch,
@@ -177,13 +210,28 @@ class GameView : State
         TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
         m_lastTime = gameTime.TotalGameTime;
         m_timer -= diff.Milliseconds;
-        if (m_timer < 0) 
+
+        if (m_timer < 0)
+        {
+            m_state = GameStateEnum.Gameplay;
+        }
+
+        if (m_state == GameStateEnum.Gameplay) 
         {
             l.Update(gameTime);
+            if (!l.m_active && l.m_alive) m_state = GameStateEnum.Won;
+            if (!l.m_active && !l.m_alive) m_state = GameStateEnum.Lost;
         }
-        if (!l.m_active && l.m_alive)
+
+        if (m_state == GameStateEnum.Won)
         {
-            m_score = (int)l.m_fuel;
+            m_score += (int)l.m_fuel;
+            ResetGame(true, gameTime);
+        }
+
+        if (m_state == GameStateEnum.Lost)
+        {
+            ResetGame(true, gameTime);
         }
     }
 }

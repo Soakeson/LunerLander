@@ -7,3 +7,11 @@ public enum EntityEnum
     Terrian
 }
 
+[Flags]
+public enum GameStateEnum 
+{
+    Waiting,
+    Gameplay,
+    Won,
+    Lost
+}

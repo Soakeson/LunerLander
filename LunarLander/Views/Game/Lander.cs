@@ -177,8 +177,9 @@ public class Lander : GameObject
         }
     }
 
-    public void Reset(LinkedList<(Point, bool)> newSkyLine)
+    public void Reset(LinkedList<(Point, bool)> newSkyLine, GameTime gameTime)
     {
+        m_lastTime = gameTime.TotalGameTime;
         m_position = m_original;
         m_fuel = 100f;
         m_rotation = 0f;
