@@ -32,3 +32,12 @@
 /processor:TextureProcessor
 /build:Images/lander.png
 
+#begin Images/fire.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Images/fire.png
+
+#begin Images/background.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Images/background.png

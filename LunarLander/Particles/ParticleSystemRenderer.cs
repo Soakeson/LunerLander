@@ -2,37 +2,35 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace CS5410
+public class ParticleSystemRenderer
 {
-    public class ParticleSystemRenderer
+    private string m_nameParticleContent;
+    private Texture2D m_texParticle;
+
+    public ParticleSystemRenderer(string nameParticleContent)
     {
-        private string m_nameParticleContent;
-        private Texture2D m_texParticle;
+        m_nameParticleContent = nameParticleContent;
+    }
 
-        public ParticleSystemRenderer(string nameParticleContent)
+    public void LoadContent(ContentManager content)
+    {
+        m_texParticle = content.Load<Texture2D>(m_nameParticleContent);
+    }
+
+    public void draw(SpriteBatch spriteBatch, ParticleSystem system)
+    {
+        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+
+        Rectangle r = new Rectangle(0, 0, 0, 0);
+        Vector2 centerTexture = new Vector2(m_texParticle.Width / 2, m_texParticle.Height / 2);
+        foreach (Particle particle in system.particles)
         {
-            m_nameParticleContent = nameParticleContent;
-        }
+            r.X = (int)particle.center.X;
+            r.Y = (int)particle.center.Y;
+            r.Width = (int)particle.size.X;
+            r.Height = (int)particle.size.Y;
 
-        public void LoadContent(ContentManager content)
-        {
-            m_texParticle = content.Load<Texture2D>(m_nameParticleContent);
-        }
-
-        public void draw(SpriteBatch spriteBatch, ParticleSystem system)
-        {
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-
-            Rectangle r = new Rectangle(0, 0, 0, 0);
-            Vector2 centerTexture = new Vector2(m_texParticle.Width / 2, m_texParticle.Height / 2);
-            foreach (Particle particle in system.particles)
-            {
-                r.X = (int)particle.center.X;
-                r.Y = (int)particle.center.Y;
-                r.Width = (int)particle.size.X;
-                r.Height = (int)particle.size.Y;
-
-                spriteBatch.Draw(
+            spriteBatch.Draw(
                     m_texParticle,
                     r,
                     null,
@@ -41,9 +39,9 @@ namespace CS5410
                     centerTexture,
                     SpriteEffects.None,
                     0);
-            }
-
-            spriteBatch.End();
         }
+
+        spriteBatch.End();
     }
 }
+

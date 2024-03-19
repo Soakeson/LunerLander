@@ -12,6 +12,8 @@ class GameView : State
     private Terrain m_generator;
     private Dictionary<EntityEnum, GameObject> m_entites;
     private SpriteFont m_itemFont;
+    private int m_score;
+    private int m_level;
 
     public GameView()
     {
@@ -21,6 +23,7 @@ class GameView : State
                     {
                         Lander l = (Lander)m_entites[EntityEnum.Lander];
                         l.Thrust(gameTime);
+                        // render thrust
                     }));
 
         m_keyboard.registerCommand(Keys.D, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
@@ -156,6 +159,11 @@ class GameView : State
     {
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
         Lander l = (Lander)m_entites[EntityEnum.Lander];
+        
         l.Update(gameTime);
+        if (!l.m_active && l.m_alive)
+        {
+            m_score = (int)l.m_fuel;
+        }
     }
 }

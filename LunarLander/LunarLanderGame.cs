@@ -8,6 +8,8 @@ public class LunarLanderGame : Game
     private Dictionary<StateEnum, State> m_stateList;
     private State m_currState;
     private StateEnum m_nextState;
+    private SpriteBatch m_spriteBatch;
+    private Texture2D m_background;
 
     public LunarLanderGame()
     {
@@ -30,6 +32,7 @@ public class LunarLanderGame : Game
         m_stateList.Add(StateEnum.Scores, new ScoresView());
         m_stateList.Add(StateEnum.Credits, new CreditsView());
         m_currState = m_stateList[StateEnum.MainMenu];
+        m_spriteBatch = new SpriteBatch(m_graphics.GraphicsDevice);
 
         // Initialize all states in the list
         foreach (StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
@@ -43,6 +46,7 @@ public class LunarLanderGame : Game
     protected override void LoadContent()
     {
         // Load content for all states
+        m_background = this.Content.Load<Texture2D>("Images/background");
         foreach (StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
         {
             if (e is not StateEnum.Exit)
@@ -68,10 +72,20 @@ public class LunarLanderGame : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.Black);
-        m_currState.render(gameTime);
-
-        // TODO: Add your drawing code here
+        m_spriteBatch.Begin();
+        m_spriteBatch.Draw(
+                m_background,
+                new Rectangle(
+                    x: 0,
+                    y: 0,
+                    width: m_graphics.PreferredBackBufferWidth,
+                    height: m_graphics.PreferredBackBufferHeight 
+                    ),
+                Color.White
+                );
+        m_spriteBatch.End();
 
         base.Draw(gameTime);
+        m_currState.render(gameTime);
     }
 }

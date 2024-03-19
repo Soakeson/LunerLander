@@ -11,10 +11,14 @@ public class Lander : GameObject
     private Vector3 m_hitBox;
     private LinkedList<(Point, bool)> m_skyLine;
     private Vector2 m_original;
+    private ParticleSystem m_fireSystem;
+    private ParticleSystem m_explosionParticleSystem;
+    private ParticleSystemRenderer m_fireRenderer;
+    private ParticleSystemRenderer m_explosionRenderer;
+    private int m_explosionDuration = 1000;
     public Vector2 m_position;
     public bool m_alive = true;
     public bool m_active = true;
-    public bool m_touchSafeZone = false;
     public double m_speed = 0;
     public Vector2 m_gravity = new Vector2(0, 0.001152f);
     public Vector2 m_velocity = new Vector2(1, 0);
@@ -28,37 +32,63 @@ public class Lander : GameObject
         m_position = new Vector2(x, y);
         m_hitBox = new Vector3(x, y, 18.5f);
         m_skyLine = skyLine;
+
+        m_explosionParticleSystem = new ParticleSystem(
+            m_position,
+            10,
+            4,
+            0.25f,
+            0.05f,
+            400,
+            100);
+        m_explosionRenderer = new ParticleSystemRenderer("Images/fire");
     }
 
     public override void Render()
     {
-        m_spriteBatch.Begin();
-        m_spriteBatch.Draw(
-            texture: m_sprite,
-            position: m_position,
-            sourceRectangle: null,
-            rotation: m_rotation,
-            origin: new Vector2((float)(m_sprite.Width/2), (float)(m_sprite.Height/2)),
-            scale: new Vector2(.1f, .1f),
-            layerDepth: 0,
-            effects: SpriteEffects.None,
-            color: Color.White);
-
-        m_spriteBatch.End();
+        if (!m_alive && m_explosionDuration > 0)
+        {
+            m_explosionRenderer.draw(m_spriteBatch, m_explosionParticleSystem);
+        }
+        if (m_alive)
+        {
+            m_spriteBatch.Begin();
+            m_spriteBatch.Draw(
+                    texture: m_sprite,
+                    position: m_position,
+                    sourceRectangle: null,
+                    rotation: m_rotation,
+                    origin: new Vector2((float)(m_sprite.Width/2), (float)(m_sprite.Height/2)),
+                    scale: new Vector2(.1f, .1f),
+                    layerDepth: 0,
+                    effects: SpriteEffects.None,
+                    color: Color.White);
+            m_spriteBatch.End();
+        }
     }
 
     public override void loadContent(ContentManager contentManager)
     {
         m_sprite = contentManager.Load<Texture2D>("Images/lander");
+        m_explosionRenderer.LoadContent(contentManager);
     }
 
     public override void Update(GameTime gameTime)
     {
         TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
-        // Update gravity
+
+        // If dead update particle system with current position and gameTime
+        if (!m_alive)
+        {
+            m_explosionParticleSystem.update(gameTime, m_position);
+            m_explosionDuration -= diff.Milliseconds;
+        }
+
+        // Calculate meters per second
         m_speed = Math.Sqrt((int)Math.Abs(m_velocity.X*1000)^2 + (int)Math.Abs(m_velocity.Y*1000)^2);
         if (m_active)
         {
+            // Update gravity
             m_velocity += m_gravity * diff.Milliseconds; 
 
             //Update position with the next velocity update
@@ -131,7 +161,15 @@ public class Lander : GameObject
         m_skyLine = newSkyLine;
         m_alive = true;
         m_active = true;
-        m_touchSafeZone = false;
+        m_explosionDuration = 1000;
+        m_explosionParticleSystem = new ParticleSystem(
+            m_position,
+            10,
+            4,
+            0.25f,
+            0.05f,
+            400,
+            100);
     }
 
     public int CollisionDetection()
