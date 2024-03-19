@@ -10,6 +10,8 @@ using CS5410;
 public class Terrain : GameObject
 {
     private BasicEffect m_effect;
+    private VertexPositionColor[] m_outlineVertInfo;
+    private int[] m_outlineVertIndex;
     private VertexPositionColor[] m_vertInfo;
     private int[] m_vertIndex;
     public LinkedList<(Point, bool)> m_skyLine;
@@ -39,6 +41,16 @@ public class Terrain : GameObject
               indexData: m_vertIndex,
               indexOffset: 0,
               primitiveCount: m_vertIndex.Length - 2
+            );
+
+            m_graphicsDevice.DrawUserIndexedPrimitives(
+              primitiveType: PrimitiveType.LineStrip,
+              vertexData: m_outlineVertInfo,
+              vertexOffset: 0,
+              numVertices: m_outlineVertInfo.Length-1,
+              indexData: m_outlineVertIndex,
+              indexOffset: 0,
+              primitiveCount: m_outlineVertIndex.Length-1
             );
         }
     }
@@ -113,6 +125,8 @@ public class Terrain : GameObject
 
         m_vertInfo = new VertexPositionColor[m_skyLine.Count * 3];
         m_vertIndex = new int[m_skyLine.Count * 3];
+        m_outlineVertInfo = new VertexPositionColor[m_skyLine.Count];
+        m_outlineVertIndex = new int[m_skyLine.Count];
 
         TranslateToTriStrip();
     }
@@ -121,8 +135,12 @@ public class Terrain : GameObject
     {
         //generate vertexpostions from skyline
         int i = 0;
+        int j = 0;
         for (LinkedListNode<(Point, bool)> p = m_skyLine.First; p != null; p = p.Next)
         {
+            m_outlineVertInfo[j].Position = new Vector3(p.Value.Item1.X, p.Value.Item1.Y, 0);
+            m_outlineVertInfo[j].Color = Color.White;
+            m_outlineVertIndex[j] = j;
 
             // Low point
             m_vertInfo[i].Position = new Vector3(p.Value.Item1.X, m_height, 0);
@@ -147,6 +165,7 @@ public class Terrain : GameObject
                 m_vertInfo[m_vertInfo.Length-1].Color = Color.Gray;
                 m_vertIndex[m_vertInfo.Length-1] = m_vertInfo.Length-1;
             }
+            j++;
             i += 2;
         }
     }
