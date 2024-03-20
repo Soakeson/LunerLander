@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,8 @@ class OptionsView : State
     private SpriteFont m_itemFont;
     private Vector2 m_titleSize;
     private Vector2 m_itemSize;
+    private TimeSpan m_lastTime;
+    private int m_inputBlock = 500;
 
     private OptionStateEnum m_currState;
     private LinkedListNode<ControlsEnum> m_currSelect;
@@ -42,6 +45,11 @@ class OptionsView : State
         {
             m_currSelect = m_currSelect.Next is not null ? m_currSelect.Next : m_currSelect = m_optionsMenu.First;
         }));
+
+        m_keyboard.registerCommand(Keys.Enter, true, new IInputDevice.CommandDelegate((GameTime GameTime, float value) =>
+        {
+            m_currState = OptionStateEnum.Listening;
+        }));
     }
 
     override public void loadContent(ContentManager contentManager)
@@ -54,14 +62,13 @@ class OptionsView : State
 
     override public StateEnum processInput(GameTime gameTime)
     {
-        m_keyboard.Update(gameTime);
-        if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+        if (m_inputBlock < 0)
         {
-            m_currState = OptionStateEnum.Listening;
+            m_keyboard.Update(gameTime);
         }
         if (Keyboard.GetState().IsKeyDown(Keys.Escape))
         {
-            // Returns to main menu
+            m_inputBlock = 500;
             return StateEnum.MainMenu;
         }
         return StateEnum.Options;
@@ -81,16 +88,27 @@ class OptionsView : State
             scale: 1
             );
 
+            drawOutlineText(
+                spriteBatch: m_spriteBatch,
+                font: m_itemFont,
+                text: $"[{m_currState}]",
+                frontColor: Color.Black,
+                outlineColor: Color.White,
+                pixelOffset: 4,
+                position: new Vector2((m_screenWidth - m_titleSize.X+30), 10),
+                scale: 1
+                );
+
         int idx = 0;
         foreach (ControlsEnum option in m_optionsMenu)
         {
             // If item has been selected render differently
-            if (m_currSelect.Value == option && m_currState == OptionStateEnum.Selection)
+            if (m_currSelect.Value == option)
             {
                 drawOutlineText(
                     spriteBatch: m_spriteBatch,
                     font: m_itemFont,
-                    text: "[" + option.ToString() + " : " + "]",
+                    text: $"[{option.ToString()} : {m_controls.GetKey(option)}]",
                     frontColor: Color.Black,
                     outlineColor: Color.White,
                     pixelOffset: 4,
@@ -103,7 +121,7 @@ class OptionsView : State
                 drawOutlineText(
                     spriteBatch: m_spriteBatch,
                     font: m_itemFont,
-                    text: option.ToString() + " : " ,
+                    text: $"[{option.ToString()} : {m_controls.GetKey(option)}]",
                     frontColor: Color.Black,
                     outlineColor: Color.DarkOrange,
                     pixelOffset: 4,
@@ -118,10 +136,20 @@ class OptionsView : State
 
     override public void update(GameTime gameTime)
     {
-        // if (m_currState == OptionStateEnum.Listening)
-        // {
-        //     m_controls.SetKey(ControlsEnum.MenuUp, Keys.Up);
-        //     m_currState = OptionStateEnum.Selection;
-        // }
+        TimeSpan diff = gameTime.TotalGameTime - m_lastTime;
+        m_lastTime = gameTime.TotalGameTime;
+        m_inputBlock -= diff.Milliseconds;
+        if (m_currState == OptionStateEnum.Listening)
+        {
+            Keys[] newKey = Keyboard.GetState().GetPressedKeys();
+            if (newKey.Length > 0)
+            {
+                if (newKey[0] != Keys.Enter)
+                {
+                    m_controls.SetKey(m_currSelect.Value, newKey[0]);
+                    m_currState = OptionStateEnum.Selection;
+                }
+            }
+        }
     }
 }

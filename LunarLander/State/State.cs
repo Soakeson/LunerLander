@@ -11,15 +11,16 @@ public abstract class State : IState
     protected int m_screenWidth;
     protected int m_screenHeight;
     protected KeyboardInput m_keyboard = new KeyboardInput();
-    // protected ControlsManager m_controls = new ControlsManager();
+    protected ControlsManager m_controls;
 
-    public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics)
+    public void initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphics, ControlsManager controls)
     {
         m_graphics = graphics;
         m_screenWidth = m_graphics.PreferredBackBufferWidth;
         m_screenHeight = m_graphics.PreferredBackBufferHeight;
         m_graphicsDevice = graphicsDevice;
         m_spriteBatch = new SpriteBatch(m_graphicsDevice);
+        m_controls = controls;
     }
 
     protected static void drawOutlineText(SpriteBatch spriteBatch, SpriteFont font, string text, Color outlineColor, Color frontColor, int pixelOffset, Vector2 position, float scale)

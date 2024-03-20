@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -5,72 +6,35 @@ using CS5410.Input;
 
 public class ControlsManager
 {
-    private Dictionary<ControlsEnum, Keys> m_controlList;
+    private Dictionary<ControlsEnum, (Keys, bool, IInputDevice.CommandDelegate)> m_controlList = new Dictionary<ControlsEnum, (Keys, bool, IInputDevice.CommandDelegate)>();
     private KeyboardInput m_keyboard = new KeyboardInput();
-    private bool m_reload = false;
-
-    public ControlsManager()
-    {
-        m_controlList = new Dictionary<ControlsEnum, Keys>();
-        Default();
-    }
-
-    public void Default()
-    {
-        m_controlList.Add(ControlsEnum.MenuUp, Keys.W);
-        m_controlList.Add(ControlsEnum.MenuDown, Keys.S);
-        m_controlList.Add(ControlsEnum.Thrust, Keys.Space);
-        m_controlList.Add(ControlsEnum.RotateLeft, Keys.A);
-        m_controlList.Add(ControlsEnum.RotateRight, Keys.D);
-    }
 
     public void Update(GameTime gameTime) 
     {
-        if (m_reload) 
-        {
-
-        }
-
         m_keyboard.Update(gameTime);
     }
 
-    public void Register(IInputDevice.CommandDelegate @delegate, Keys key)
+    public void Register(ControlsEnum control, Keys key, bool keyPressOnly, IInputDevice.CommandDelegate @delegate)
     {
-        m_keyboard.registerCommand(key, true, @delegate);
+        m_controlList.Add(control, (key, keyPressOnly, @delegate));
+        m_keyboard.registerCommand(key, keyPressOnly, @delegate);
     }
 
     public void SetKey(ControlsEnum control, Keys key)
     {
-        m_controlList[control] = key;
-        m_reload = true;
+        (Keys, bool, IInputDevice.CommandDelegate) oldPair = m_controlList[control];
+        m_controlList.Remove(control);
+        m_controlList.Add(control, (key, oldPair.Item2, oldPair.Item3));
+        m_keyboard = new KeyboardInput();
+        foreach ((Keys, bool, IInputDevice.CommandDelegate) commands in m_controlList.Values)
+        {
+            m_keyboard.registerCommand(commands.Item1, commands.Item2, commands.Item3);
+        }
     }
 
-    public Keys MenuDownKey()
+    public Keys GetKey(ControlsEnum control)
     {
 
-        return m_controlList[ControlsEnum.MenuDown];
-    }
-
-    public Keys MenuUpKey()
-    {
-
-        return m_controlList[ControlsEnum.MenuUp];
-    }
-
-    public Keys ThrustKey()
-    {
-        return m_controlList[ControlsEnum.Thrust];
-    }
-
-    public Keys RotateLeftKey()
-    {
-
-        return m_controlList[ControlsEnum.RotateLeft];
-    }
-
-    public Keys RotateRightKey()
-    {
-
-        return m_controlList[ControlsEnum.RotateRight];
+        return m_controlList[control].Item1;
     }
 }

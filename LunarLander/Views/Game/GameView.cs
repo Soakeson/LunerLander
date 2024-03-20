@@ -22,24 +22,6 @@ class GameView : State
     {
         m_entites = new Dictionary<EntityEnum, GameObject>();
 
-        m_keyboard.registerCommand(Keys.Space, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
-                    {
-                        Lander l = (Lander)m_entites[EntityEnum.Lander];
-                        l.Thrust(gameTime);
-                    }));
-
-        m_keyboard.registerCommand(Keys.D, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
-                    {
-                        Lander l = (Lander)m_entites[EntityEnum.Lander];
-                        l.RotateRight(gameTime);
-                    }));
-
-        m_keyboard.registerCommand(Keys.A, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
-                    {
-                        Lander l = (Lander)m_entites[EntityEnum.Lander];
-                        l.RotateLeft(gameTime);
-                    }));
-
         m_state = GameStateEnum.Waiting;
     }
 
@@ -61,6 +43,25 @@ class GameView : State
         {
             entity.loadContent(contentManager);
         }
+
+        m_controls.Register(ControlsEnum.Thrust, Keys.Space, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
+                    {
+                        Lander l = (Lander)m_entites[EntityEnum.Lander];
+                        l.Thrust(gameTime);
+                    }));
+
+        m_controls.Register(ControlsEnum.RotateRight, Keys.D, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
+                    {
+                        Lander l = (Lander)m_entites[EntityEnum.Lander];
+                        l.RotateRight(gameTime);
+                    }));
+
+        m_controls.Register(ControlsEnum.RotateLeft, Keys.A, false, new IInputDevice.CommandDelegate((GameTime gameTime, float value) => 
+                    {
+                        Lander l = (Lander)m_entites[EntityEnum.Lander];
+                        l.RotateLeft(gameTime);
+                    }));
+
     }
 
     override public StateEnum processInput(GameTime gameTime)
@@ -78,7 +79,7 @@ class GameView : State
 
         if (m_state == GameStateEnum.Gameplay)
         {
-            m_keyboard.Update(gameTime);
+            m_controls.Update(gameTime);
         }
 
         if (m_state == GameStateEnum.Lost && m_timer < 0)

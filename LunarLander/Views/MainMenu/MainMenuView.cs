@@ -13,6 +13,7 @@ class MainMenuView : State
     private Vector2 m_itemSize;
     private LinkedListNode<KeyValuePair<MainMenuEnum, StateEnum>> m_currSelect;
     private LinkedList<KeyValuePair<MainMenuEnum, StateEnum>> m_mainMenu;
+    private StateEnum m_nextState = StateEnum.MainMenu;
 
     public MainMenuView()
     {
@@ -27,14 +28,6 @@ class MainMenuView : State
         // Initilaize first value in the linked list as the start
         m_currSelect = m_mainMenu.First;
 
-        m_keyboard.registerCommand(Keys.W, true, new IInputDevice.CommandDelegate((GameTime gameTime, float value) =>
-        {
-            m_currSelect = m_currSelect.Previous is not null ? m_currSelect.Previous : m_mainMenu.Last;
-        }));
-        m_keyboard.registerCommand(Keys.S, true, new IInputDevice.CommandDelegate((GameTime GameTime, float value) =>
-        {
-            m_currSelect = m_currSelect.Next is not null ? m_currSelect.Next : m_currSelect = m_mainMenu.First;
-        }));
     }
 
     override public void loadContent(ContentManager contentManager)
@@ -43,17 +36,28 @@ class MainMenuView : State
         m_titleSize = m_titleFont.MeasureString("LUNAR LANDER");
         m_itemFont = contentManager.Load<SpriteFont>("Fonts/Micro5-50");
         m_itemSize = m_itemFont.MeasureString("Y");
+
+
+        m_keyboard.registerCommand(Keys.W, true, new IInputDevice.CommandDelegate((GameTime gameTime, float value) =>
+        {
+            m_currSelect = m_currSelect.Previous is not null ? m_currSelect.Previous : m_mainMenu.Last;
+        }));
+        m_keyboard.registerCommand(Keys.S, true, new IInputDevice.CommandDelegate((GameTime GameTime, float value) =>
+        {
+            m_currSelect = m_currSelect.Next is not null ? m_currSelect.Next : m_currSelect = m_mainMenu.First;
+        }));
+        m_keyboard.registerCommand(Keys.Enter, true, new IInputDevice.CommandDelegate((GameTime GameTime, float value) =>
+        {
+            m_nextState = m_currSelect.Value.Value;
+        }));
     }
 
     override public StateEnum processInput(GameTime gameTime)
     {
         m_keyboard.Update(gameTime);
-        if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-        {
-            // Returns current selected menu items corresponding StateEnum
-            return m_currSelect.Value.Value;
-        }
-        return StateEnum.MainMenu;
+        StateEnum nextState = m_nextState;
+        m_nextState = StateEnum.MainMenu;
+        return nextState;
     }
 
     override public void render(GameTime gameTime)

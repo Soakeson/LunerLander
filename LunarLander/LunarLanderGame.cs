@@ -10,6 +10,7 @@ public class LunarLanderGame : Game
     private StateEnum m_nextState;
     private SpriteBatch m_spriteBatch;
     private Texture2D m_background;
+    protected ControlsManager m_controls = new ControlsManager();
 
     public LunarLanderGame()
     {
@@ -38,7 +39,7 @@ public class LunarLanderGame : Game
         foreach (StateEnum e in StateEnum.GetValues(typeof(StateEnum)))
         {
             if (e is not StateEnum.Exit)
-                m_stateList[e].initialize(GraphicsDevice, m_graphics);
+                m_stateList[e].initialize(GraphicsDevice, m_graphics, m_controls);
         }
         base.Initialize();
     }
