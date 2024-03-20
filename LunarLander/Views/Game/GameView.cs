@@ -45,7 +45,7 @@ class GameView : State
 
     override public void loadContent(ContentManager contentManager)
     {
-        Terrain t = new Terrain(m_screenWidth, m_screenHeight);
+        Terrain t = new Terrain(m_screenWidth, m_screenHeight, 2);
         m_entites.Add(EntityEnum.Terrian, t);
         m_entites.Add(EntityEnum.Lander, new Lander(100, 100, t.m_skyLine));
         m_itemFont = contentManager.Load<SpriteFont>("Fonts/Micro5-50");
@@ -103,7 +103,8 @@ class GameView : State
         if (next) m_level++;
         else {m_level = 0; m_score = 0;};
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
-        t.Generate();
+        if (m_level == 0) {t.Generate(2);};
+        if (m_level == 1) {t.Generate(1);};
         Lander l = (Lander)m_entites[EntityEnum.Lander];
         l.Reset(t.m_skyLine, gameTime);
         m_timer = 3000;

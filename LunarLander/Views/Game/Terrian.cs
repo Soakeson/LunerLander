@@ -19,12 +19,12 @@ public class Terrain : GameObject
     private int m_height;
     MyRandom m_rand = new MyRandom();
 
-    public Terrain(int width, int height)
+    public Terrain(int width, int height, int safeZones)
     {
         m_width = width;
         m_height = height;
 
-        Generate();
+        Generate(safeZones);
     }
 
 
@@ -47,10 +47,10 @@ public class Terrain : GameObject
               primitiveType: PrimitiveType.LineStrip,
               vertexData: m_outlineVertInfo,
               vertexOffset: 0,
-              numVertices: m_outlineVertInfo.Length-1,
+              numVertices: m_outlineVertInfo.Length - 1,
               indexData: m_outlineVertIndex,
               indexOffset: 0,
-              primitiveCount: m_outlineVertIndex.Length-1
+              primitiveCount: m_outlineVertIndex.Length - 1
             );
         }
     }
@@ -92,10 +92,11 @@ public class Terrain : GameObject
         }
         double s = .7;
         double r = s * m_rand.nextGaussian(0.0, 1.0) * Math.Abs(end.Value.Item1.X - start.Value.Item1.X);
-        r = r > m_height / 4 ? m_height / 45 : r;
-        r = r < -m_height / 4 ? m_height / 55 : r;
+        r = r > m_height / 3 ? m_height / 100 : r;
+        r = r < -m_height / 3 ? m_height / 100 : r;
 
         int y = (int)((start.Value.Item1.Y + end.Value.Item1.Y) / 2 + r);
+        y = y > m_height ? m_height - (int)Math.Abs(r) : y;
         int x = (start.Value.Item1.X + end.Value.Item1.X) / 2;
 
         m_skyLine.AddAfter(start, new LinkedListNode<(Point, bool)>((new Point(x, y), false)));
@@ -107,21 +108,52 @@ public class Terrain : GameObject
     }
 
     // Initialization public facing function for the recursive one.
-    public void Generate()
+    public void Generate(int safeZones)
     {
-        int startY = m_rand.Next((int)(m_height * .55), (int)(m_height * .8));
-        int safeX = m_rand.Next((int)(m_width * .15), (int)(m_width * .75));
+        int startY = m_rand.Next((int)(m_height * .55), (int)(m_height * .85));
 
-        // Add Start, End and Start and End of safe zone.
         m_skyLine = new LinkedList<(Point, bool)>();
+        // Add Start, End and Start and End of safe zone.
         m_skyLine.AddFirst((new Point(0, startY), false));
         m_skyLine.AddLast((new Point(m_width, startY), false));
-        m_skyLine.AddAfter(m_skyLine.First, (new Point(safeX, startY), true));
-        m_skyLine.AddAfter(m_skyLine.First.Next, (new Point(safeX + (int)(m_width * .1), startY), true));
+        LinkedListNode<(Point, bool)> currNode = m_skyLine.First;
 
-        // Generate in two chunks; Before and After the safe zone.
-        Generate(m_skyLine.First, m_skyLine.First.Next, 7, 0);
-        Generate(m_skyLine.Last.Previous, m_skyLine.Last, 7, 0);
+        // Generate safe zone points
+        for (int i = 0; i < safeZones; i++)
+        {
+            // Mid point zone
+            int safeX = m_rand.Next((int)(m_width * ((i/(float)safeZones))), (int)(m_width * ((i+1)/(float)safeZones)));
+
+            // Zone at the start
+            if (i == 0)
+            {
+                safeX = m_rand.Next((int)(m_width * ((i/(float)safeZones) + .15f)), (int)(m_width * (((i+1)/(float)safeZones)-.1f)));
+            }
+
+            // Zone on the end
+            if (i == safeZones - 1)
+            {
+                safeX = m_rand.Next((int)(m_width * ((i/(float)safeZones)+.1f)), (int)(m_width * (((i+1)/(float)safeZones) - .15f)));
+            }
+
+            int safeY = m_rand.Next((int)(m_height * .55), (int)(m_height * .85));
+            m_skyLine.AddAfter(currNode, (new Point(safeX, safeY), true));
+            m_skyLine.AddAfter(currNode.Next, (new Point(safeX + (int)(m_width * .1), safeY), true));
+            currNode = currNode.Next.Next;
+        }
+
+        // Pair up zones that need to be generated
+        List<(LinkedListNode<(Point, bool)>, LinkedListNode<(Point, bool)>)> pairs = new List<(LinkedListNode<(Point, bool)>, LinkedListNode<(Point, bool)>)>();
+        for (LinkedListNode<(Point, bool)> p = m_skyLine.First; p != null; p = p.Next.Next)
+        {
+            pairs.Add((p, p.Next));
+        }
+
+        // Generate each pair
+        foreach ((LinkedListNode<(Point, bool)>, LinkedListNode<(Point, bool)>) pair in pairs)
+        {
+            Generate(pair.Item1, pair.Item2, 7, 0);
+        }
 
         m_vertInfo = new VertexPositionColor[m_skyLine.Count * 3];
         m_vertIndex = new int[m_skyLine.Count * 3];
@@ -148,9 +180,9 @@ public class Terrain : GameObject
             m_vertIndex[i] = i;
 
             // Point on skyline
-            m_vertInfo[i+1].Position = new Vector3(p.Value.Item1.X, p.Value.Item1.Y, 0);
-            m_vertInfo[i+1].Color = Color.Gray;
-            m_vertIndex[i+1] = i+1;
+            m_vertInfo[i + 1].Position = new Vector3(p.Value.Item1.X, p.Value.Item1.Y, 0);
+            m_vertInfo[i + 1].Color = Color.Gray;
+            m_vertIndex[i + 1] = i + 1;
 
             // Next connector point
             if (p.Next != null)
@@ -159,11 +191,11 @@ public class Terrain : GameObject
                 m_vertInfo[i + 2].Color = Color.Gray;
                 m_vertIndex[i + 2] = i + 2;
             }
-            else 
+            else
             {
-                m_vertInfo[m_vertInfo.Length-1].Position = new Vector3(m_width, m_height, 0);
-                m_vertInfo[m_vertInfo.Length-1].Color = Color.Gray;
-                m_vertIndex[m_vertInfo.Length-1] = m_vertInfo.Length-1;
+                m_vertInfo[m_vertInfo.Length - 1].Position = new Vector3(m_width, m_height, 0);
+                m_vertInfo[m_vertInfo.Length - 1].Color = Color.Gray;
+                m_vertIndex[m_vertInfo.Length - 1] = m_vertInfo.Length - 1;
             }
             j++;
             i += 2;
