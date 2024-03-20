@@ -62,7 +62,7 @@ class OptionsView : State
 
     override public StateEnum processInput(GameTime gameTime)
     {
-        if (m_inputBlock < 0)
+        if (m_inputBlock < 0 && m_currState == OptionStateEnum.Selection)
         {
             m_keyboard.Update(gameTime);
         }

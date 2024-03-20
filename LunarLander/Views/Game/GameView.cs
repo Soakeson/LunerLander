@@ -9,7 +9,6 @@ using CS5410.Input;
 class GameView : State
 {
 
-    private Terrain m_generator;
     private GameStateEnum m_state;
     private Dictionary<EntityEnum, GameObject> m_entites;
     private SpriteFont m_itemFont;
@@ -92,6 +91,7 @@ class GameView : State
         if (m_level == 1 && m_state == GameStateEnum.Won && m_timer < 0)
         {
             m_state = GameStateEnum.Waiting;
+            m_level = 0;
             ResetGame(false, gameTime);
             return StateEnum.Scores;
         }
@@ -104,8 +104,7 @@ class GameView : State
         if (next) m_level++;
         else {m_level = 0; m_score = 0;};
         Terrain t = (Terrain)m_entites[EntityEnum.Terrian];
-        if (m_level == 0) {t.Generate(2);};
-        if (m_level == 1) {t.Generate(1);};
+        t.Generate(m_level < 1 ? 2 : 1);
         Lander l = (Lander)m_entites[EntityEnum.Lander];
         l.Reset(t.m_skyLine, gameTime);
         m_timer = 3000;
