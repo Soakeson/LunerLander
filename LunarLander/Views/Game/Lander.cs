@@ -31,7 +31,7 @@ public class Lander : GameObject
     {
         m_original = new Vector2(x, y);
         m_position = new Vector2(x, y);
-        m_hitBox = new Vector3(x, y, 18.5f);
+        m_hitBox = new Vector3(x, y, 19f);
         m_skyLine = skyLine;
 
         m_explosionParticleSystem = new ParticleSystem(
@@ -130,9 +130,7 @@ public class Lander : GameObject
             // If collision check if it was going to fast or at too steep of an angle then set alive status
             if (collision != 0) 
             {
-                m_active = false;
-                m_velocity = new Vector2(0, 0);
-                if (collision == 1 && (m_angle.Y > -.97f || m_speed > 30))
+                if (collision == 1 && (m_angle.Y > -.97f || m_speed > 25))
                 {
                     m_alive = false;
                 }
@@ -140,6 +138,8 @@ public class Lander : GameObject
                 {
                     m_alive = false;
                 }
+                m_active = false;
+                m_velocity = new Vector2(0, 0);
             }
         }
     }

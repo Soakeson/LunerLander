@@ -60,7 +60,6 @@ class GameView : State
                         Lander l = (Lander)m_entites[EntityEnum.Lander];
                         l.RotateLeft(gameTime);
                     }));
-
     }
 
     override public StateEnum processInput(GameTime gameTime)

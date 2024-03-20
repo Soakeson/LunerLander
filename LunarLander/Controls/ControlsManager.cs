@@ -33,7 +33,6 @@ public class ControlsManager
 
     public Keys GetKey(ControlsEnum control)
     {
-
         return m_controlList[control].Item1;
     }
 }
